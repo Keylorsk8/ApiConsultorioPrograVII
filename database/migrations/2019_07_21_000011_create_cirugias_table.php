@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFumadosTable extends Migration
+class CreateCirugiasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateFumadosTable extends Migration
      */
     public function up()
     {
-        Schema::create('fumados', function (Blueprint $table) {
+        Schema::create('cirugias', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('cantidadCigarrosPorDia');
-            $table->integer('tiempoComenzoAFumar');
-            $table->string('observaciones');
-            $table->integer('idExpediente');
+            $table->string('nombre');
+            $table->date('fecha');
+            $table->integer('lugar');
+            $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateFumadosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fumados');
+        Schema::dropIfExists('cirugias');
     }
 }

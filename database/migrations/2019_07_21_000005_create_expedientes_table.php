@@ -18,7 +18,7 @@ class CreateExpedientesTable extends Migration
             $table->integer('perfil_id');
             $table->foreign('perfil_id')->
             references('id')->
-            on('perfil');
+            on('perfiles');
             $table->timestamps();
         });
     }

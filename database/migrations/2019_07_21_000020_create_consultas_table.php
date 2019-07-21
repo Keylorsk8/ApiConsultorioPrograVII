@@ -19,7 +19,14 @@ class CreateConsultasTable extends Migration
             $table->string('ubicacion');
             $table->double('precio');
             $table->date('fechayHora');
-            $table->integer('idDoctor');
+            $table->integer('doctor_id');
+            $table->foreign('doctor_id')->
+            references('id')->
+            on('users');
+            $table->integer('perfil_id');
+            $table->foreign('perfil_id')->
+            references('id')->
+            on('perfiles');
             $table->timestamps();
         });
     }
@@ -31,6 +38,12 @@ class CreateConsultasTable extends Migration
      */
     public function down()
     {
+        Schema::table('consultas', function (Blueprint $table) {
+            $table->dropForeign('consultas_user_id_foreign');
+            $table->dropColumn('doctor_id');
+            $table->dropForeign('consultas_perfil_id_foreign');
+            $table->dropColumn('perfil_id');
+        });
         Schema::dropIfExists('consultas');
     }
 }

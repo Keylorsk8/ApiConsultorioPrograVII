@@ -21,13 +21,16 @@ class CreateUsersTable extends Migration
             $table->string('segundoApellido');
             $table->string('password');
             $table->string('sexo');
-            $table->integer('rol')->default(3);
-            $table->integer('idEspecialidad')->nullable()->default(null);
-            $table->timestamp('email_verified_at')->nullable();
-            $table->foreign('rol')->
+            $table->unsignedInteger('rol_id');
+            $table->unsignedInteger('especialidad_id')->nullable();
+            $table->foreign('especialidad_id')->
             references('id')->
-            on('rol');
+            on('especialidades');
+            $table->foreign('role_id')->
+            references('id')->
+            on('roles');
             $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
     }
