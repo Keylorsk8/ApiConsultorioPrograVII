@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAlcoholesTable extends Migration
+class CreateFumadosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,23 +13,15 @@ class CreateAlcoholesTable extends Migration
      */
     public function up()
     {
-        Schema::create('alcoholes', function (Blueprint $table) {
+        Schema::create('fumados', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->date('tiempoDeComienzo');
-            $table->integer('frecueciaDeConsumo');
-            $table->boolean('tomaActualmente');
+            $table->integer('cantidadCigarrosPorDia');
+            $table->integer('tiempoComenzoAFumar');
             $table->string('observaciones');
-            $table->boolean('cerveza');
-            $table->integer('consumoCerveza');
-            $table->boolean('vino');
-            $table->integer('consumoVino');
-            $table->boolean('licor');
-            $table->integer('consumoLicor');
             $table->integer('expediente_id');
             $table->foreign('expediente_id')->
             references('id')->
-            on('expediente_id');
-            //hola mundo
+            on('expedientes');
             $table->timestamps();
         });
     }
@@ -41,6 +33,10 @@ class CreateAlcoholesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('alcoholes');
+        Schema::table('fumados', function (Blueprint $table) {
+            $table->dropForeign('fumados_expediente_id_foreign');
+            $table->dropColumn('expediente_id');
+        });
+        Schema::dropIfExists('fumados');
     }
 }
