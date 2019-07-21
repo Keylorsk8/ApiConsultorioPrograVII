@@ -38,7 +38,7 @@ class CreatePerfilesTable extends Migration
     {
         Schema::table('perfiles', function (Blueprint $table) {
             $table->dropForeign('perfiles_users_id_foreign');
-            $table->dropColumn('role_id');
+            $table->dropColumn('usuario_id');
         });
         Schema::dropIfExists('perfiles');
     }
