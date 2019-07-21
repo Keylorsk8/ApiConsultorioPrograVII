@@ -29,6 +29,7 @@ class CreateAlcoholesTable extends Migration
             $table->foreign('expediente_id')->
             references('id')->
             on('expediente_id');
+            //hola mundo
             $table->timestamps();
         });
     }
