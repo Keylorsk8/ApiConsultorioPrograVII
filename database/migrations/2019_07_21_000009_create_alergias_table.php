@@ -14,11 +14,11 @@ class CreateAlergiasTable extends Migration
     public function up()
     {
         Schema::create('alergias', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
-            $table->integer('idCategoria');
+            $table->string('categoria');
             $table->string('reaccion');
-            $table->string('obvservacion');
+            $table->string('observacion');
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
         });

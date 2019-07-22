@@ -14,7 +14,7 @@ class CreateActividadFisicasTable extends Migration
     public function up()
     {
         Schema::create('actividad_fisicas', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->integer('minutosDeDuracion');
             $table->integer('cantidadVecesPorSemana');

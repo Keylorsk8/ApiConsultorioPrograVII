@@ -14,11 +14,15 @@ class CreateExpedientesTable extends Migration
     public function up()
     {
         Schema::create('expedientes', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->integer('perfil_id');
+            $table->increments('id');
+            $table->unsignedInteger('perfil_id');
             $table->foreign('perfil_id')->
             references('id')->
             on('perfiles');
+            $table->unsignedInteger('tipoSangre_id');
+            $table->foreign('tipoSangre_id')->
+            references('id')->
+            on('tipo_sangres');
             $table->timestamps();
         });
     }
@@ -31,8 +35,10 @@ class CreateExpedientesTable extends Migration
     public function down()
     {
         Schema::table('expedientes', function (Blueprint $table) {
-            $table->dropForeign('expedientes_perfiles_id_foreign');
+            $table->dropForeign('expedientes_perfil_id_foreign');
             $table->dropColumn('perfil_id');
+            $table->dropForeign('expedientes_tipoSangre_id_foreign');
+            $table->dropColumn('tipoSangre_id');
         });
         Schema::dropIfExists('expedientes');
     }

@@ -14,10 +14,9 @@ class CreateEnfermedadesTable extends Migration
     public function up()
     {
         Schema::create('enfermedades', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->string('observaciones');
-            $table->integer('expediente');
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
         });

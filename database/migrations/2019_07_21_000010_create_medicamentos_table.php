@@ -14,11 +14,11 @@ class CreateMedicamentosTable extends Migration
     public function up()
     {
         Schema::create('medicamentos', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->string('descripcion');
-            $table->integer('expediente_id');
-            $table->foreign('expendiente_id')->
+            $table->unsignedInteger('expediente_id');
+            $table->foreign('expediente_id')->
             references('id')->
             on('expedientes');
             $table->timestamps();

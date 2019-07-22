@@ -14,11 +14,11 @@ class CreateFumadosTable extends Migration
     public function up()
     {
         Schema::create('fumados', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('cantidadCigarrosPorDia');
             $table->integer('tiempoComenzoAFumar');
             $table->string('observaciones');
-            $table->integer('expediente_id');
+            $table->unsignedInteger('expediente_id');
             $table->foreign('expediente_id')->
             references('id')->
             on('expedientes');

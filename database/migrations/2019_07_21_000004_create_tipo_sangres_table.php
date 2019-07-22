@@ -14,7 +14,7 @@ class CreateTipoSangresTable extends Migration
     public function up()
     {
         Schema::create('tipo_sangres', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->timestamps();
         });

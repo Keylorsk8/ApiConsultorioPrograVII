@@ -17,7 +17,7 @@ class CreateEnfermedadFamiliaresTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('quien');
-            $table->integer('user_id');
+            $table->unsignedInteger('user_id');
             $table->foreign('user_id')->
             references('id')->
             on('users');
