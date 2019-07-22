@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','primerApellido','segundoApellido','sexo','especialidad_id','rol_Id'
     ];
 
     /**
@@ -42,13 +42,13 @@ class User extends Authenticatable
         return $this->hasMany('App\Perfil');
     }
 
-    public function consultas()
-    {
-        return $this->hasMany('App\Consulta');
-    }
+    //public function consultas()
+    //{
+  //      return $this->hasMany('App\Consulta');
+//    }
 
-    public function enfermedad_familiares()
-    {
-        return $this->hasMany('App\enfermedadFamiliares');
-    }
+    //public function enfermedad_familiares()
+    //{
+    //    return $this->hasMany('App\enfermedadFamiliares');
+    //}
 }

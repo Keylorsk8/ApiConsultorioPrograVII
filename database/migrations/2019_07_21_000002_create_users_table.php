@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('email')->unique();
             $table->string('name');
             $table->string('primerApellido');
@@ -23,15 +23,15 @@ class CreateUsersTable extends Migration
             $table->string('sexo');
             $table->unsignedInteger('rol_id');
             $table->unsignedInteger('especialidad_id')->nullable();
-            $table->foreign('especialidad_id')->
-            references('id')->
-            on('especialidades');
-            $table->foreign('role_id')->
-            references('id')->
-            on('roles');
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
+            $table->foreign('rol_id')->
+            references('id')->
+            on('roles')->onDelete('cascade');
+            $table->foreign('especialidad_id')->
+            references('id')->
+            on('especialidades');
         });
     }
 
@@ -43,8 +43,10 @@ class CreateUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('users_role_id_foreign');
-            $table->dropColumn('role_id');
+            $table->dropForeign('users_rol_id_foreign');
+            $table->dropColumn('rol_id');
+            $table->dropForeign('users_especialidad_id_foreign');
+            $table->dropColumn('especialidad_id');
         });
          Schema::dropIfExists('users');
     }

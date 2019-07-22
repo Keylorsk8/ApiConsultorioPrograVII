@@ -45,4 +45,14 @@ class Expediente extends Model
     {
         return $this->belongsToMany('App\Cirugia', 'expediente_cirugia', 'expediente_id', 'cirugia_id');
     }
+
+    public function tipoSangre()
+    {
+        return $this->belongsTo('App\tipoSangre');
+    }
+
+    public function enfermedades()
+    {
+        return $this->belongsToMany('App\Enfermedad', 'expediente_enfermedad', 'expediente_id', 'enfermedad_id');
+    }
 }

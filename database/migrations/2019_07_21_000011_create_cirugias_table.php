@@ -14,7 +14,7 @@ class CreateCirugiasTable extends Migration
     public function up()
     {
         Schema::create('cirugias', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->date('fecha');
             $table->integer('lugar');

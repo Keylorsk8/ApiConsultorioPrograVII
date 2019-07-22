@@ -14,14 +14,14 @@ class CreatePerfilesTable extends Migration
     public function up()
     {
         Schema::create('perfiles', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('nombre');
             $table->string('primerApellido');
             $table->string('segundoApellido');
             $table->string('sexo');
             $table->date('fechaNacimiento');
-            $table->integer('tipoSangre');
-            $table->integer('usuario_id');
+            $table->boolean('perfilPrincipal')->default('0');
+            $table->unsignedInteger('usuario_id');
             $table->foreign('usuario_id')->
             references('id')->
             on('users');
@@ -37,7 +37,7 @@ class CreatePerfilesTable extends Migration
     public function down()
     {
         Schema::table('perfiles', function (Blueprint $table) {
-            $table->dropForeign('perfiles_users_id_foreign');
+            $table->dropForeign('perfiles_usuario_id_foreign');
             $table->dropColumn('usuario_id');
         });
         Schema::dropIfExists('perfiles');
