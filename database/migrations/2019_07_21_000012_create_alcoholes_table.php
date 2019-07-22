@@ -14,7 +14,7 @@ class CreateAlcoholesTable extends Migration
     public function up()
     {
         Schema::create('alcoholes', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->date('tiempoDeComienzo');
             $table->integer('frecueciaDeConsumo');
             $table->boolean('tomaActualmente');
@@ -25,7 +25,7 @@ class CreateAlcoholesTable extends Migration
             $table->integer('consumoVino');
             $table->boolean('licor');
             $table->integer('consumoLicor');
-            $table->integer('expediente_id');
+            $table->unsignedInteger('expediente_id');
             $table->foreign('expediente_id')->
             references('id')->
             on('expedientes');

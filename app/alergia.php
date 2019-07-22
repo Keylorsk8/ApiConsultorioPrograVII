@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Alergia extends Model
 {
+    protected $fillable = ['nombre','catergoria','reaccion','observacion','creadaPorAdmin'];
+
     public function expedientes()
     {
         return $this->belongsToMany('App\Expediente', 'expediente_alergia', 'alergia_id', 'expediente_id');

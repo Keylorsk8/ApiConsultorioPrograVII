@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ExpedienteCirugia extends Migration
+class CreateExpedienteCirugiaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,8 +15,8 @@ class ExpedienteCirugia extends Migration
     {
         Schema::create('expediente_cirugia', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('expediente_id');
-            $table->integer('cirugia_id');
+            $table->unsignedInteger('expediente_id');
+            $table->unsignedInteger('cirugia_id');
             $table->foreign('expediente_id')->
             references('id')->
             on('expedientes')->onDelete('cascade');
