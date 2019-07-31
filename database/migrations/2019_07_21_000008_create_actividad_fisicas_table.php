@@ -20,6 +20,7 @@ class CreateActividadFisicasTable extends Migration
             $table->integer('cantidadVecesPorSemana');
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

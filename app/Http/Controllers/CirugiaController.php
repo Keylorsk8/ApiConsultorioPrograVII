@@ -35,7 +35,38 @@ class CirugiaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $this-> validate($request,[
+                'nombre'=>'required|min:5',
+                'fecha'=>'required',
+                'lugar'=>'required'
+            ]);
+            //Obtener el usuario autentificado actual
+            // if(!$user = JWTAuth::parseToken()->authenticate()){
+            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
+            // }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(),422);
+        }
+        $cirug=new cirugia([
+            'nombre'=>$request->input('nombre'),
+            'fecha'=>$request->input('fecha'),
+            'lugar'=>$request->input('lugar')
+        ]);
+
+        if($cirug->save()){
+
+            $response=[
+                'msg'=>'Cirugía agregada!',
+                'Cirugía'=>$cirug
+            ];
+            return response()->json($response, 201);
+
+        }
+        $reponse=[
+            'msg'=>'Error durante la creación'
+        ];
+        return response()->json($response, 404);
     }
 
     /**
@@ -67,9 +98,43 @@ class CirugiaController extends Controller
      * @param  \App\cirugia  $cirugia
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, cirugia $cirugia)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $this-> validate($request,[
+                'nombre'=>'required|min:5',
+                'fecha'=>'required',
+                'lugar'=>'required'
+            ]);
+            //Obtener el usuario autentificado actual
+            // if(!$user = JWTAuth::parseToken()->authenticate()){
+            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
+            // }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(),422);
+        }
+        //Datos del videojuego
+        $cir=cirugia::find($id);
+        $cir->nombre=$request->input('nombre');
+        $cir->fecha=$request->input('fecha');
+        $cir->lugar=$request->input('lugar');
+
+        if($cir->update()){
+            //Sincronice plataformas
+            //Array de plataformas
+
+            $cir=cirugia::where('id',$id)->first();
+            $response=[
+                'msg'=>'Cirugía actualizada!',
+                'Cirugía'=>$cir
+            ];
+            return response()->json($response, 200);
+
+        }
+        $reponse=[
+            'msg'=>'Error durante la actualización'
+        ];
+        return response()->json($response, 404);
     }
 
     /**

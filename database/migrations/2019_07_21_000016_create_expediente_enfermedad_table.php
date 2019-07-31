@@ -23,7 +23,7 @@ class CreateExpedienteEnfermedadTable extends Migration
             on('expedientes')->onDelete('cascade');
             $table->foreign('enfermedad_id')->
             references('id')->
-            on('enfermedades')->onDelete('cascade');
+            on('enfermedads')->onDelete('cascade');
         });
     }
 

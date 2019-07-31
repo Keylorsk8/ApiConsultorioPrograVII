@@ -21,6 +21,7 @@ class CreateAlergiasTable extends Migration
             $table->string('observacion');
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

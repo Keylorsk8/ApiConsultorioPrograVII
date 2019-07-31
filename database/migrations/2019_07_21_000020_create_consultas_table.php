@@ -18,12 +18,13 @@ class CreateConsultasTable extends Migration
             $table->string('nombre');
             $table->string('ubicacion');
             $table->double('precio');
-            $table->date('fechayHora');
-            $table->unsignedInteger('doctor_id');
-            $table->foreign('doctor_id')->
+            $table->date('fecha');
+            $table->string('hora');
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->
             references('id')->
             on('users');
-            $table->unsignedInteger('perfil_id');
+            $table->unsignedInteger('perfil_id')->nullable();
             $table->foreign('perfil_id')->
             references('id')->
             on('perfiles');
@@ -39,8 +40,8 @@ class CreateConsultasTable extends Migration
     public function down()
     {
         Schema::table('consultas', function (Blueprint $table) {
-            $table->dropForeign('consultas_doctor_id_foreign');
-            $table->dropColumn('doctor_id');
+            $table->dropForeign('consultas_user_id_foreign');
+            $table->dropColumn('user_id');
             $table->dropForeign('consultas_perfil_id_foreign');
             $table->dropColumn('perfil_id');
         });
