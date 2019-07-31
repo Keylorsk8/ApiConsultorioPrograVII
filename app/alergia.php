@@ -3,10 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Alergia extends Model
 {
-    protected $fillable = ['nombre','catergoria','reaccion','observacion','creadaPorAdmin'];
+    use SoftDeletes;
+    protected $fillable = ['nombre','categoria','reaccion','observacion','creadaPorAdmin'];
+
+    protected $dates = ['deleted_at'];
 
     public function expedientes()
     {

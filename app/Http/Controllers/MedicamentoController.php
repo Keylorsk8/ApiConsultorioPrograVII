@@ -35,7 +35,38 @@ class MedicamentoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $this-> validate($request,[
+                'nombre'=>'required|min:5',
+
+
+            ]);
+            //Obtener el usuario autentificado actual
+            // if(!$user = JWTAuth::parseToken()->authenticate()){
+            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
+            // }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(),422);
+        }
+        $med=new medicamento([
+            'nombre'=>$request->input('nombre'),
+            'descripcion'=>$request->input('descripcion')
+        ]);
+        $med->expediente()->associate($request->input('expediente_id'));
+
+        if($med->save()){
+
+            $response=[
+                'msg'=>'Medicamento creado!',
+                'medicamento'=>$med
+            ];
+            return response()->json($response, 201);
+
+        }
+        $reponse=[
+            'msg'=>'Error durante la creación'
+        ];
+        return response()->json($response, 404);
     }
 
     /**
@@ -67,9 +98,42 @@ class MedicamentoController extends Controller
      * @param  \App\medicamento  $medicamento
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, medicamento $medicamento)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $this-> validate($request,[
+                'nombre'=>'required|min:5'
+
+            ]);
+            //Obtener el usuario autentificado actual
+            // if(!$user = JWTAuth::parseToken()->authenticate()){
+            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
+            // }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(),422);
+        }
+
+        $med=medicamento::find($id);
+        $med->nombre=$request->input('nombre');
+        $med->descripcion=$request->input('descripcion');
+
+        $med->expediente()->associate($request->input('expediente_id'));
+
+        if($med->update()){
+
+
+            $en=medicamento::where('id',$id)->first();
+            $response=[
+                'msg'=>'Medicamento actualizado!',
+                'medicamento'=>$en
+            ];
+            return response()->json($response, 200);
+
+        }
+        $reponse=[
+            'msg'=>'Error durante la actualización'
+        ];
+        return response()->json($response, 404);
     }
 
     /**
