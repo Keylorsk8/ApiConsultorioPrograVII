@@ -17,7 +17,7 @@ class CreateCirugiasTable extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->date('fecha');
-            $table->integer('lugar');
+            $table->string('lugar');
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
         });

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Fumado extends Model
 {
-    protected $fillable = ['cantidadCigarrosPorDia','tiempoComenzoAFumar','observaiones','expediente_id'];
+    protected $fillable = ['cantidadCigarrosPorDia','tiempoComenzoAFumar','observaciones','expediente_id'];
 
     public function expediente()
     {

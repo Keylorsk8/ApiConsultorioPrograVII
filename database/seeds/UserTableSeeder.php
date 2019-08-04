@@ -16,7 +16,7 @@ class UserTableSeeder extends Seeder
             'primerApellido' => 'Vega',
             'segundoApellido' => 'Obregón',
             'email'=>'glorivega22@gmail.com',
-            'password'=>'usuario123',
+            'password'=>crypt('usuario123',null),
             'sexo' => 'Femenino',
             'especialidad_id' => null,
             'rol_id'=>1
@@ -29,7 +29,7 @@ class UserTableSeeder extends Seeder
             'email'=>'keylorskatecr@gmail.com',
             'sexo' => 'Masculino',
             'especialidad_id' => null,
-            'password'=>'123456',
+            'password'=>crypt('usuario123',null),
             'rol_id'=>1
         ]);
 
@@ -41,7 +41,7 @@ class UserTableSeeder extends Seeder
             'email'=>'doctor@gmail.com',
             'sexo' => 'Masculino',
             'especialidad_id' => 1,
-            'password'=>'123456',
+            'password'=>crypt('usuario123',null),
             'rol_id'=>2
         ]);
 
@@ -50,7 +50,7 @@ class UserTableSeeder extends Seeder
             'primerApellido' => 'Rojas',
             'segundoApellido' => 'Morales',
             'email'=>'jprojas@gmail.com',
-            'password'=>'123456',
+            'password'=>crypt('usuario123',null),
             'sexo' => 'Otro',
             'especialidad_id' => null,
             'rol_id'=>3
