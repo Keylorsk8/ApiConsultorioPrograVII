@@ -16,7 +16,9 @@ class AlergiasTableSeeder extends Seeder
             'categoria' => 'Respiratoria',
             'reaccion' => 'Conjuntivitis, Estornudos',
             'observacion' => '',
-            'creadaPorAdmin' => '1'
+            'creadaPorAdmin' => '1',
+            'created_at' => '2018-07-08 01:27:58',
+            'updated_at' => '2018-07-08 01:28:27',
         ]);
 
         DB::table('alergias')->insert([

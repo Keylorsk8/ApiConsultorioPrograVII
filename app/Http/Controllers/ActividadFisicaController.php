@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\actividadFisica;
 use Illuminate\Http\Request;
+use JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class ActividadFisicaController extends Controller
 {

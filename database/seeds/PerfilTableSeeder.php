@@ -11,14 +11,14 @@ class PerfilTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('perfiles')->insert([
+        DB::table('perfils')->insert([
             'nombre' => 'Jean Paul',
             'primerApellido' => 'Rojas',
             'segundoApellido' => 'Morales',
             'sexo' => 'Otro',
             'fechaNacimiento' => '1997-12-16',
             'perfilPrincipal' => 1,
-            'usuario_id' => 1
+            'usuario_id' => 4
         ]);
     }
 }
