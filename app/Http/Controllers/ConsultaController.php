@@ -233,7 +233,7 @@ class ConsultaController extends Controller
         $response=[
             'msg'=>'Consulta eliminada con éxito'
         ];
-        return response()->json($response, 200);2+
+        return response()->json($response, 200);
 
     }
 
