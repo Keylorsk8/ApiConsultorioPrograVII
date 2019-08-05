@@ -27,8 +27,9 @@ class CreateConsultasTable extends Migration
             $table->unsignedInteger('perfil_id')->nullable();
             $table->foreign('perfil_id')->
             references('id')->
-            on('perfiles');
+            on('perfils');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

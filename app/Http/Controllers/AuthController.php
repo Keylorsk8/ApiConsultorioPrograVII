@@ -175,4 +175,37 @@ class AuthController extends Controller
      }
 
 
+
+    public function registerMedico(Request $request)
+    {
+        try {
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required|email',
+                'password' => 'required|min:6',
+                'primerApellido'=>'required',
+                'segundoApellido'=> 'required',
+                'sexo'=> 'required',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e ) {
+        return \response($e->errors(),422);
+        }
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->primerApellido = $request->primerApellido;
+        $user->segundoApellido = $request->segundoApellido;
+        $user->sexo = $request->sexo;
+        $user->especialidad_id= $request->especialidad_id;
+        $user->rol_id= 2;
+
+
+
+        if (User::where('email', $user->email) -> exists()) {
+            return response()->json(['msg'=>'Email ya está registrado'], 404);
+         }
+        $user->save();
+        return response()->json(['user' => $user]);
+    }
 }

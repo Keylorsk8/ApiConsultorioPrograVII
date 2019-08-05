@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 //Gloriana
-class CreatePerfilesTable extends Migration
+class CreatePerfilsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePerfilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('perfiles', function (Blueprint $table) {
+        Schema::create('perfils', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nombre');
             $table->string('primerApellido');
@@ -36,10 +36,10 @@ class CreatePerfilesTable extends Migration
      */
     public function down()
     {
-        Schema::table('perfiles', function (Blueprint $table) {
+        Schema::table('perfils', function (Blueprint $table) {
             $table->dropForeign('perfiles_usuario_id_foreign');
             $table->dropColumn('usuario_id');
         });
-        Schema::dropIfExists('perfiles');
+        Schema::dropIfExists('perfils');
     }
 }
