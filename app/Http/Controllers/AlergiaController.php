@@ -6,16 +6,9 @@ use App\alergia;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
+
 class AlergiaController extends Controller
 {
-    public function __construct()
-    {
-        //No se quieren proteger todas las acciones
-        //Agregar segundo argumento
-        $this->middleware('jwt.auth',['only'=>[
-            'update','store', 'destroy'
-        ]]);
-    }
     /**
      * Display a listing of the resource.
      *
@@ -174,7 +167,7 @@ class AlergiaController extends Controller
      * @param  \App\alergia  $alergia
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         $user = Auth::User()->session_id;
         //Obtener el usuario autentificado actual
@@ -191,7 +184,7 @@ class AlergiaController extends Controller
         }
 
         if($user->rol_id === 1) {
-        alergia::where('id', $request->id)->delete();
+        alergia::where('id', $id)->delete();
         $response=[
             'msg'=>'Alergia eliminada!'
         ];
@@ -225,4 +218,20 @@ class AlergiaController extends Controller
         }
 
     }
+
+    public function all()
+    {
+        try {
+            //Ordenar los videojuegos por el nombre de forma descendente de mayor a menor
+            $alergia = alergia::orderBy('nombre', 'desc')->get();
+            $response = [
+                'msg' => 'Lista de Alergias',
+                'Alergias' => $alergia
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
+    }
+
 }
