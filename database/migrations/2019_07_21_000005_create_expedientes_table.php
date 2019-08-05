@@ -18,7 +18,7 @@ class CreateExpedientesTable extends Migration
             $table->unsignedInteger('perfil_id');
             $table->foreign('perfil_id')->
             references('id')->
-            on('perfiles');
+            on('perfils');
             $table->unsignedInteger('tipoSangre_id');
             $table->foreign('tipoSangre_id')->
             references('id')->

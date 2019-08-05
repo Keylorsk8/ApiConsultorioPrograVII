@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\perfil;
 use Illuminate\Http\Request;
 use JWTAuth;
-
+use App\consulta;
 class PerfilController extends Controller
 {
     public function __construct()
@@ -23,7 +23,20 @@ class PerfilController extends Controller
      */
     public function index()
     {
-        //
+        if(!$user = JWTAuth::parseToken()->authenticate()){
+            return response()->json(['msg'=>'Usuario no encontrado'],404);
+        }
+        try {
+
+            $per=perfil::orderBy('nombre', 'asc') ->where('usuario_id', $user->id)->get();
+            $response=[
+                'msg'=>'Lista de perfiles',
+                'Perfil'=>$per
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(),422);
+        }
     }
 
     /**
@@ -63,7 +76,7 @@ class PerfilController extends Controller
         return \response($e->errors(),422);
         }
 
-        
+
         $perf = new perfil();
         $perf->nombre = $request->nombre;
         $perf->email = $request->email;
@@ -126,4 +139,19 @@ class PerfilController extends Controller
     {
         //
     }
+
+     public function listaDeConsulta(Request $request){
+        try {
+            consulta::onlyTrashed()->where('perfil_id','>', 0)->restore();
+            $con=consulta::orderBy('nombre', 'asc') ->where('perfil_id', $request->id)->get('nombre','precio');
+            $response=[
+                'msg'=>'Lista de consultas',
+                'Consulta'=>$con
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e)
+         {
+            return \response($e->getMessage(),422);
+        }
+     }
 }

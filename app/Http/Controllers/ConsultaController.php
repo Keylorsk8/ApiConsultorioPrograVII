@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\consulta;
+use JWTAuth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ConsultaController extends Controller
 {
@@ -16,21 +18,23 @@ class ConsultaController extends Controller
     {
         try {
 
+            consulta::where('perfil_id','>', 0)->delete();
             $con=consulta::orderBy('nombre', 'asc') ->get();
             $response=[
                 'msg'=>'Lista de consultas',
                 'Consulta'=>$con
             ];
             return response()->json($response, 200);
-        } catch (\Exception $e) {
+        } catch (\Exception $e)
+         {
             return \response($e->getMessage(),422);
         }
 
     }
     public function consultaAsignada(){
         try{
-
-            $con=consulta::orderBy('nombre', 'asc') ->where('perfil_id', null)->get();
+            consulta::onlyTrashed()->where('perfil_id','>', 0)->restore();
+            $con=consulta::orderBy('nombre', 'asc') ->where('perfil_id','>', 0)->get();
             $response=[
                 'msg'=>'Lista de consultas',
                 'Consulta'=>$con
@@ -41,9 +45,31 @@ class ConsultaController extends Controller
         }
         catch (\Exception $e) {
         return \response($e->getMessage(),422);
-    }
+        }
     }
 
+    public function consultaPorMedico(){
+
+        try{
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+
+            consulta::onlyTrashed()->where('user_id','>', 0)->restore();
+            $con=consulta::orderBy('user_id', 'asc')->where('user_id', $user->id)->get();
+            $response=[
+                'msg'=>'Lista de consultas por médico',
+                'Consulta'=>$con
+            ];
+            return response()->json($response, 200);
+
+
+        }
+        catch (\Exception $e) {
+        return \response($e->getMessage(),422);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -88,6 +114,14 @@ class ConsultaController extends Controller
 
         $con->user()->associate($request->input('user_id'));
 
+        $con->perfil()->associate($request->input('perfil_id')
+    );
+
+        if (consulta::where('hora', $con->hora) -> exists()) {
+            return response()->json(['msg'=>'Hora ya registrada'], 404);
+        }
+
+
         if($con->save()){
 
             $response=[
@@ -109,9 +143,19 @@ class ConsultaController extends Controller
      * @param  \App\consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function show(consulta $consulta)
+    public function show($id)
     {
-        //
+        try{
+            //withCount contar el número de resultados de una relación
+            $con=consulta::where('id',$id)->first();
+            $response=[
+                'msg'=>'Información de la consulta',
+                'con'=>$con
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(),422);
+        }
     }
 
     /**
@@ -183,8 +227,34 @@ class ConsultaController extends Controller
      * @param  \App\consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function destroy(consulta $consulta)
+    public function destroy(Request $request)
     {
-        //
+        $consult = consulta::where('id', $request->id)->delete();
+        $response=[
+            'msg'=>'Consulta eliminada con éxito'
+        ];
+        return response()->json($response, 200);2+
+
+    }
+
+    public function consultayMedico(){
+        try {
+            $con = DB::table('consultas')
+            ->join('users', 'consultas.user_id', '=', 'users.id')
+            ->join('especialidades', 'especialidades.id', '=', 'users.especialidad_id')
+            ->select('users.name','users.primerApellido', 'users.segundoApellido','especialidades.nombre as Especialidad',
+            'consultas.fecha','consultas.hora')
+            ->where('users.rol_id',2)->get();
+            $response=[
+                'msg'=>'Lista de consultas',
+                'Consulta'=>$con
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e)
+         {
+            return \response($e->getMessage(),422);
+        }
+
     }
 }
+
