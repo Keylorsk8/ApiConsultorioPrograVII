@@ -46,7 +46,7 @@ Route::group(['prefix' => 'v1'], function () {
    // Route::get('consultaymedico', 'ConsultaController@consultayMedico');
     //Route::post('consultaPerfil','PerfilController@listaDeConsulta');
     // //
-    //Route::resource('consulta', 'ConsultaController');
+    Route::resource('consulta', 'ConsultaController');
     //Route::get('listaConsulta', 'ConsultaController@consultaAsignada');
     //Route::get('listaConsultaPorMedico', 'ConsultaController@consultaPorMedico');
     // Route::post('medicos','AuthController@listaMedico');
