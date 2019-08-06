@@ -89,9 +89,19 @@ class AlergiaController extends Controller
      * @param  \App\alergia  $alergia
      * @return \Illuminate\Http\Response
      */
-    public function show(alergia $alergia)
+    public function show($id)
     {
-        //
+        try{
+            //withCount contar el número de resultados de una relación
+            $al=alergia::where('id',$id)->first();
+            $response=[
+                'msg'=>'Información de la alergia',
+                'Alergia'=>$al
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(),422);
+        }
     }
 
     /**

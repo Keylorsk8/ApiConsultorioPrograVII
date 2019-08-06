@@ -7,8 +7,17 @@ use JWTAuth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class ConsultaController extends Controller
 {
+    public function __construct()
+    {
+        //No se quieren proteger todas las acciones
+        //Agregar segundo argumento
+        $this->middleware('jwt.auth',['only'=>[
+            'update','store'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -98,12 +107,13 @@ class ConsultaController extends Controller
 
             ]);
             //Obtener el usuario autentificado actual
-            // if(!$user = JWTAuth::parseToken()->authenticate()){
-            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
-            // }
+             if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
         }
+
         $con=new consulta([
             'nombre'=>$request->input('nombre'),
             'ubicacion'=>$request->input('ubicacion'),
@@ -112,7 +122,7 @@ class ConsultaController extends Controller
             'hora'=>$request->input('hora')
         ]);
 
-        $con->user()->associate($request->input('user_id'));
+        $con->user()->associate($user->id);
 
         $con->perfil()->associate($request->input('perfil_id')
     );
@@ -227,13 +237,23 @@ class ConsultaController extends Controller
      * @param  \App\consulta  $consulta
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $consult = consulta::where('id', $request->id)->delete();
-        $response=[
-            'msg'=>'Consulta eliminada con éxito'
-        ];
-        return response()->json($response, 200);
+
+        if(consulta::where('perfil_id',null)){
+            consulta::where('id', $id)->where('perfil_id', null)->forceDelete();
+            $response=[
+                'msg'=>'Consulta eliminada con éxito'
+            ];
+            return response()->json($response, 200);
+        }
+
+        if(consulta::where('perfil_id', !null)){
+            $response1=[
+                'msg1'=>'Consulta asignada. No puede ser eliminada'
+            ];
+            return response()->json($response1, 200);
+        }
 
     }
 
