@@ -42,6 +42,11 @@ return [
     */
 
     'disks' => [
+        'imgAlergia' => [
+            'driver' => 'local',
+            'root' => storage_path('app/imgAlergia'),
+            
+        ],
 
         'local' => [
             'driver' => 'local',
