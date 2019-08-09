@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use  Illuminate\Support\Facades\Auth;
 use App\User;
+use App\Perfil;
 
 class AuthController extends Controller
 {
@@ -47,11 +48,20 @@ class AuthController extends Controller
             return response()->json(['msg'=>'Email ya está registrado'], 404);
          }
         $user->save();
+        $perf= new Perfil();
+        $perf-> nombre = $user->name;
+        $perf-> primerApellido = $user->primerApellido;
+        $perf-> segundoApellido = $user->segundoApellido;
+        $perf-> sexo = $user->sexo;
+        $perf-> perfilPrincipal = 1;
+        $perf->perfil()->associate($user->id);
+        $perf->save();
         return response()->json(['user' => $user]);
     }
 
     public function listaMedico(Request $request)
     {
+
         try {
 
             $med=User:: where('rol_id',2)->

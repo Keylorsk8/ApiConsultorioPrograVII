@@ -18,6 +18,7 @@ class CreateActividadFisicasTable extends Migration
             $table->string('nombre');
             $table->integer('minutosDeDuracion');
             $table->integer('cantidadVecesPorSemana');
+            $table->string('imagen',200)->nullable();
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
             $table->softDeletes();

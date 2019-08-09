@@ -197,9 +197,9 @@ class ConsultaController extends Controller
                 'hora'=>'required'
             ]);
             //Obtener el usuario autentificado actual
-            // if(!$user = JWTAuth::parseToken()->authenticate()){
-            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
-            // }
+             if(!$user = JWTAuth::parseToken()->authenticate()){
+               return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
         }
@@ -211,7 +211,7 @@ class ConsultaController extends Controller
         $cons->fecha=$request->input('fecha');
         $cons->hora=$request->input('hora');
 
-        $cons->user()->associate($request->input('user_id'));
+        $cons->user()->associate($user->id);
 
         if($cons->update()){
             //Sincronice plataformas

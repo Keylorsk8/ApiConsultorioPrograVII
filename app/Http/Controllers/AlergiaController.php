@@ -52,7 +52,8 @@ class AlergiaController extends Controller
             $this-> validate($request,[
                 'nombre'=>'required|min:5',
                 'categoria'=>'required|min:10',
-                'reaccion'=>'required'
+                'reaccion'=>'required',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
             //Obtener el usuario autentificado actual
             // if(!$user = JWTAuth::parseToken()->authenticate()){
@@ -67,6 +68,14 @@ class AlergiaController extends Controller
             'reaccion'=>$request->input('reaccion'),
             'observacion'=>$request->input('observacion')
         ]);
+
+        if($request->file('imagen') != null){
+            $img = $request->file('imagen');
+            $file_route = time().'_'.$img->getClientOriginalName();
+
+            Storage::disk('imgAlergia')->put($file_route,file_get_contents($img->getRealPath()));
+            $alergia->imagen = $file_route;
+        }
 
         if($alergia->save()){
 
@@ -96,7 +105,7 @@ class AlergiaController extends Controller
             $al=alergia::where('id',$id)->first();
             $response=[
                 'msg'=>'Información de la alergia',
-                'Alergia'=>$al
+                'Alergias'=>[$al]
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {

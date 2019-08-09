@@ -67,6 +67,14 @@ class ActividadFisicaController extends Controller
             'cantidadVecesPorSemana'=>$request->input('cantidadVecesPorSemana')
         ]);
 
+        if($request->file('imagen') != null){
+            $img = $request->file('imagen');
+            $file_route = time().'_'.$img->getClientOriginalName();
+
+            Storage::disk('imgActividadFisica')->put($file_route,file_get_contents($img->getRealPath()));
+            $actFis->imagen = $file_route;
+        }
+
         if($actFis->save()){
 
             $response=[

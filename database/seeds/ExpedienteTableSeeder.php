@@ -13,7 +13,7 @@ class ExpedienteTableSeeder extends Seeder
     {
         DB::table('expedientes')->insert([
             'perfil_id' => 1,
-            'tipoSangre_id' => 1
+            'tipo_sangre_id' => 1
         ]);
     }
 }

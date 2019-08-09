@@ -43,6 +43,18 @@ return [
 
     'disks' => [
 
+        'imgEnfermedad' => [
+            'driver' => 'local',
+            'root' => storage_path('app/imgEnfermedad'),
+            'url' => env('APP_URL').'/storage'
+        ],
+
+        'imgActividadFisica' => [
+            'driver' => 'local',
+            'root' => storage_path('app/imgActividadFisica'),
+            'url' => env('APP_URL').'/storage'
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
