@@ -18,7 +18,7 @@ class PerfilTableSeeder extends Seeder
             'sexo' => 'Otro',
             'fechaNacimiento' => '1997-12-16',
             'perfilPrincipal' => 1,
-            'usuario_id' => 4
+            'user_id' => 4
         ]);
     }
 }

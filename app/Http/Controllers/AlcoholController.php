@@ -133,6 +133,8 @@ class AlcoholController extends Controller
 
 
 
+
+
         if($al->update()){
             //Sincronice plataformas
             //Array de plataformas

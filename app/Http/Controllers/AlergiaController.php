@@ -49,10 +49,11 @@ class AlergiaController extends Controller
     public function store(Request $request)
     {
         try {
-            $this->validate($request, [
-                'nombre' => 'required|min:1',
-                'categoria' => 'required|min:1',
-                'reaccion' => 'required'
+            $this-> validate($request,[
+                'nombre'=>'required|min:5',
+                'categoria'=>'required|min:10',
+                'reaccion'=>'required',
+                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
             //Obtener el usuario autentificado actual
             // if(!$user = JWTAuth::parseToken()->authenticate()){
@@ -68,8 +69,15 @@ class AlergiaController extends Controller
             'observacion' => $request->input('observacion')
         ]);
 
-        if ($alergia->save()) {
+        if($request->file('imagen') != null){
+            $img = $request->file('imagen');
+            $file_route = time().'_'.$img->getClientOriginalName();
 
+            Storage::disk('imgAlergia')->put($file_route,file_get_contents($img->getRealPath()));
+            $alergia->imagen = $file_route;
+        }
+
+        if($alergia->save()){
             $response = [
                 'msg' => 'Alergia creada!',
                 'Alergia' => $alergia

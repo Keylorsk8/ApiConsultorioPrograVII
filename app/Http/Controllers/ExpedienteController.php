@@ -35,7 +35,7 @@ class ExpedienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**
@@ -67,9 +67,49 @@ class ExpedienteController extends Controller
      * @param  \App\expediente  $expediente
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, expediente $expediente)
+    public function update(Request $request, $id)
     {
-        //
+
+        $exp=expediente::find($id);
+
+        $exp->tipoSangre()->associate($request->input('tipo_sangre_id'));
+
+        if($exp->update()){
+            //Sincronice plataformas
+            //Array de plataformas
+            $exp->actividadesFisicas()->sync(
+                $request->input('actividadesFisicas') === null ?
+                [] : $request->input('actividadesFisicas')
+            );
+
+            $exp->alergias()->sync(
+                $request->input('alergias') === null ?
+                [] : $request->input('alergias')
+            );
+
+            $exp->cirugias()->sync(
+                $request->input('cirugias') === null ?
+                [] : $request->input('cirugias')
+            );
+
+            $exp->enfermedades()->sync(
+                $request->input('enfermedades') === null ?
+                [] : $request->input('enfermedades')
+            );
+
+            $exp=expediente::where('id',$id)->first();
+            $response=[
+                'msg'=>'Consulta actualizada!',
+                'Consulta'=>$exp
+            ];
+            return response()->json($response, 200);
+
+        }
+        $reponse=[
+            'msg'=>'Error durante la actualización'
+        ];
+        return response()->json($response, 404);
+
     }
 
     /**

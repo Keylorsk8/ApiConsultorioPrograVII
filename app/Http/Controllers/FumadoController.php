@@ -116,7 +116,7 @@ class FumadoController extends Controller
         $fum->tiempoComenzoAFumar=$request->input('tiempoComenzoAFumar');
         $fum->observaciones=$request->input('observaciones');
 
-        $fum->expediente()->associate($request->input('expediente_id'));
+    
 
         if($fum->update()){
 

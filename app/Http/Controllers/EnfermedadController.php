@@ -72,6 +72,14 @@ class EnfermedadController extends Controller
             'observaciones'=>$request->input('observaciones')
         ]);
 
+        if($request->file('imagen') != null){
+            $img = $request->file('imagen');
+            $file_route = time().'_'.$img->getClientOriginalName();
+
+            Storage::disk('imgEnfermedad')->put($file_route,file_get_contents($img->getRealPath()));
+            $enf->imagen = $file_route;
+        }
+
         if($enf->save()){
 
             $response=[

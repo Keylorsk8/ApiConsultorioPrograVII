@@ -6,6 +6,8 @@ use App\perfil;
 use Illuminate\Http\Request;
 use JWTAuth;
 use App\consulta;
+use App\Expediente;
+
 class PerfilController extends Controller
 {
     public function __construct()
@@ -60,7 +62,6 @@ class PerfilController extends Controller
         try {
             $this->validate($request, [
                 'nombre' => 'required',
-                'email' => 'required|email',
                 'primerApellido'=>'required',
                 'segundoApellido'=> 'required',
                 'sexo'=> 'required',
@@ -79,20 +80,24 @@ class PerfilController extends Controller
 
         $perf = new perfil();
         $perf->nombre = $request->nombre;
-        $perf->email = $request->email;
         $perf->primerApellido = $request->primerApellido;
         $perf->segundoApellido = $request->segundoApellido;
         $perf->sexo = $request->sexo;
         $perf->fechaNacimiento= $request->fechaNacimiento;
         $perf->user()->associate($user->id);
         if($perf->save()){
-
+            $exp = new Expediente();
+            $exp->perfil()->associate($perf->id);
+            $exp->save();
             $response=[
                 'msg'=>'Perfil agregado!',
                 'Perfil'=>$perf
             ];
             return response()->json($response, 201);
+
         }
+
+
     }
 
     /**

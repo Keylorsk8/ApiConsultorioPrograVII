@@ -13,7 +13,7 @@ class CreateExpedienteActividadFisicaTable extends Migration
      */
     public function up()
     {
-        Schema::create('expediente_actividadFisica', function (Blueprint $table) {
+        Schema::create('expediente_actividad_fisica', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('expediente_id');
             $table->unsignedInteger('actividadFisica_id');
@@ -33,7 +33,7 @@ class CreateExpedienteActividadFisicaTable extends Migration
      */
     public function down()
     {
-        Schema::table('expediente_actividadFisica', function (Blueprint $table) {
+        Schema::table('expediente_actividad_fisica', function (Blueprint $table) {
             $table->dropForeign('expediente_actividadFisica_expediente_id_foreign');
             $table->dropColumn('expediente_id');
             $table->dropForeign('expediente_actividadFisica_actividadFisica_id_foreign');

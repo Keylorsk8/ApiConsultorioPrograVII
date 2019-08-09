@@ -21,8 +21,8 @@ class CreatePerfilsTable extends Migration
             $table->string('sexo');
             $table->date('fechaNacimiento');
             $table->boolean('perfilPrincipal')->default('0');
-            $table->unsignedInteger('usuario_id');
-            $table->foreign('usuario_id')->
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->
             references('id')->
             on('users');
             $table->timestamps();

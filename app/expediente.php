@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expediente extends Model
 {
+    protected $fillable = ['tipo_sangre_id'];
     public function perfil()
     {
         return $this->belongsTo('App\Perfil');
