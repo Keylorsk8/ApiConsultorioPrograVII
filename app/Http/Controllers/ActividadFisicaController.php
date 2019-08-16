@@ -6,6 +6,7 @@ use App\actividadFisica;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ActividadFisicaController extends Controller
 {
@@ -21,7 +22,7 @@ class ActividadFisicaController extends Controller
             $aler=actividadFisica::orderBy('nombre', 'asc') ->get();
             $response=[
                 'msg'=>'Lista de actividades físicas',
-                'actividades físicas'=>$aler
+                'Actividades'=>$aler
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {
@@ -213,6 +214,18 @@ class ActividadFisicaController extends Controller
         ];
         return response()->json($response, 200);
         }
+    }
 
+    public function obtenerImagen($filename){
+        $archivo = Storage::get('imgActividad/'.$filename);
+        if($archivo != null){
+            $mime = Storage::mimeType('imgActividad/'.$filename);
+            return response($archivo, 200)->header('Content-Type',$mime);
+        }else{
+            $response = [
+                'msg' => 'Imagen no encontrada'
+            ];
+            return response()->json($response,404);
+        }
     }
 }

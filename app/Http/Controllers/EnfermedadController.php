@@ -6,6 +6,7 @@ use App\enfermedad;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class EnfermedadController extends Controller
 {
@@ -29,7 +30,7 @@ class EnfermedadController extends Controller
             $aler=enfermedad::orderBy('nombre', 'asc') ->get();
             $response=[
                 'msg'=>'Lista de enfermedades más comunes',
-                'enfermedades'=>$aler
+                'Enfermedades'=>$aler
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {
@@ -222,5 +223,18 @@ class EnfermedadController extends Controller
         //     'enfermedad'=>$enf
         // ];
         // return response()->json($response, 200);
+    }
+
+    public function obtenerImagen($filename){
+        $archivo = Storage::get('imgEnfermedad/'.$filename);
+        if($archivo != null){
+            $mime = Storage::mimeType('imgEnfermedad/'.$filename);
+            return response($archivo, 200)->header('Content-Type',$mime);
+        }else{
+            $response = [
+                'msg' => 'Imagen no encontrada'
+            ];
+            return response()->json($response,404);
+        }
     }
 }

@@ -18,6 +18,7 @@ class CreateEnfermedadsTable extends Migration
             $table->string('nombre');
             $table->string('observaciones');
             $table->boolean('creadaPorAdmin')->default(false);
+            $table->string('imagen',200)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
