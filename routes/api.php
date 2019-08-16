@@ -21,6 +21,18 @@ Route::group(['prefix' => 'v1'], function () {
         Route::get('eliminadas', 'AlergiaController@getDeleted');
         Route::post('delete/{id}', 'AlergiaController@delete');
         Route::post('recuperarAlergia/{id}', 'AlergiaController@restore');
+        Route::get('obtenerImagen/{ruta}', 'AlergiaController@obtenerImagen');
+        Route::post('saveImage/{id}', 'AlergiaController@saveImage');
+    });
+
+    Route::group(['prefix' => 'ActividadFisica'], function () {
+        Route::resource('actividadFisica', 'ActividadFisicaController');
+        Route::get('obtenerImagen/{ruta}', 'ActividadFisicaController@obtenerImagen');
+    });
+
+    Route::group(['prefix' => 'Enfermedad'], function () {
+        Route::resource('enfermedad', 'EnfermedadController');
+        Route::get('obtenerImagen/{ruta}', 'EnfermedadController@obtenerImagen');
     });
 
     Route::group(['prefix' => 'expediente'], function ($router) {
@@ -29,8 +41,6 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('fumado', 'FumadoController');
         Route::resource('medicamento', 'MedicamentoController');
         Route::resource('cirugia', 'CirugiaController');
-        Route::resource('enfermedad', 'EnfermedadController');
-        Route::resource('actividadFisica', 'ActividadFisicaController');
         Route::resource('consumoAlcohol', 'AlcoholController');
     });
 
@@ -43,15 +53,15 @@ Route::group(['prefix' => 'v1'], function () {
         Route::resource('perfil', 'PerfilController');
     });
     Route::resource('alergias', 'AlergiaController');
-    //  Route::resource('enfermedadFamiliar', 'EnfermedadFamiliaresController');
+    // Route::resource('enfermedadFamiliar', 'EnfermedadFamiliaresController');
 
     // Route::get('consultaymedico', 'ConsultaController@consultayMedico');
-    //Route::post('consultaPerfil','PerfilController@listaDeConsulta');
-    // //
+    // Route::post('consultaPerfil','PerfilController@listaDeConsulta');
+
     Route::resource('expediente', 'ExpedienteController');
     Route::resource('consulta', 'ConsultaController');
-    //Route::get('listaConsulta', 'ConsultaController@consultaAsignada');
-    //Route::get('listaConsultaPorMedico', 'ConsultaController@consultaPorMedico');
+    // Route::get('listaConsulta', 'ConsultaController@consultaAsignada');
+    // Route::get('listaConsultaPorMedico', 'ConsultaController@consultaPorMedico');
     // Route::post('medicos','AuthController@listaMedico');
 
 });

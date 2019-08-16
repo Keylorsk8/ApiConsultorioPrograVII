@@ -6,6 +6,7 @@ use App\alergia;
 use Illuminate\Http\Request;
 use JWTAuth;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class AlergiaController extends Controller
@@ -49,11 +50,11 @@ class AlergiaController extends Controller
     public function store(Request $request)
     {
         try {
-            $this-> validate($request,[
-                'nombre'=>'required|min:5',
-                'categoria'=>'required|min:10',
-                'reaccion'=>'required',
-                'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            $this->validate($request, [
+                'nombre' => 'required|min:1',
+                'categoria' => 'required|min:1',
+                'reaccion' => 'required|min:1'
+
             ]);
             //Obtener el usuario autentificado actual
             // if(!$user = JWTAuth::parseToken()->authenticate()){
@@ -69,18 +70,10 @@ class AlergiaController extends Controller
             'observacion' => $request->input('observacion')
         ]);
 
-        if($request->file('imagen') != null){
-            $img = $request->file('imagen');
-            $file_route = time().'_'.$img->getClientOriginalName();
-
-            Storage::disk('imgAlergia')->put($file_route,file_get_contents($img->getRealPath()));
-            $alergia->imagen = $file_route;
-        }
-
-        if($alergia->save()){
+        if ($alergia->save()) {
             $response = [
                 'msg' => 'Alergia creada!',
-                'Alergia' => $alergia
+                'Alergias' => [$alergia]
             ];
             return response()->json($response, 201);
         }
@@ -133,8 +126,8 @@ class AlergiaController extends Controller
     {
         try {
             $this->validate($request, [
-                'nombre' => 'required|min:1',
-                'categoria' => 'required|min:1',
+                'nombre' => 'required',
+                'categoria' => 'required',
                 'reaccion' => 'required'
             ]);
             //Obtener el usuario autentificado actual
@@ -237,12 +230,12 @@ class AlergiaController extends Controller
 
     public function restore($id, Request $request)
     {
-            alergia::onlyTrashed()->where('id', $id)->restore();
+        alergia::onlyTrashed()->where('id', $id)->restore();
 
-            $response = [
-                'msg' => 'Alergia restaurada!'
-            ];
-            return response()->json($response, 200);
+        $response = [
+            'msg' => 'Alergia restaurada!'
+        ];
+        return response()->json($response, 200);
     }
 
     public function all()
@@ -257,6 +250,43 @@ class AlergiaController extends Controller
             return response()->json($response, 200);
         } catch (\Exception $e) {
             return \response($e->getMessage(), 422);
+        }
+    }
+
+    public function obtenerImagen($filename){
+        $archivo = Storage::get('imgAlergia/'.$filename);
+        if($archivo != null){
+            $mime = Storage::mimeType('imgAlergia/'.$filename);
+            return response($archivo, 200)->header('Content-Type',$mime);
+        }else{
+            $response = [
+                'msg' => 'Imagen no encontrada'
+            ];
+            return response()->json($response,404);
+        }
+    }
+
+    public function saveImage(Request $request,$id)
+    {
+        request()->validate([
+            'imagen' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($request->file('imagen') != null) {
+            $img = $request->file('imagen');
+            $file_route = time() . '_' . $img->getClientOriginalName();
+
+            Storage::disk('imgAlergia')->put($file_route, file_get_contents($img->getRealPath()));
+            $alergy = alergia::where('id',$id)->first();
+            $alergy->imagen = $file_route;
+
+            $alergy->update();
+            $response = [
+                'link' => $file_route
+            ];
+            return response()->json($response,200);
+        }else {
+            return null;
         }
     }
 }

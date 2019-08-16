@@ -17,7 +17,6 @@ class CreateMedicamentosTable extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->string('descripcion');
-            $table->string('imagen',200)->nullable();
             $table->timestamps();
         });
     }

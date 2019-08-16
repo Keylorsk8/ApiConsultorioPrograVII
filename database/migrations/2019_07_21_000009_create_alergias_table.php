@@ -18,7 +18,7 @@ class CreateAlergiasTable extends Migration
             $table->string('nombre');
             $table->string('categoria');
             $table->string('reaccion');
-            $table->string('observacion');
+            $table->string('observacion')->nullable();
             $table->string('imagen',200)->nullable();
             $table->boolean('creadaPorAdmin')->default(false);
             $table->timestamps();
