@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Expediente;
 use Illuminate\Http\Request;
 use  Illuminate\Support\Facades\Auth;
 use App\User;
@@ -39,24 +40,38 @@ class AuthController extends Controller
         $user->primerApellido = $request->primerApellido;
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
-        $user->especialidad_id= $request->especialidad_id;
-        $user->rol_id= $request->rol_id;
+        $user->especialidad_id= null;
+        $user->rol_id= 3;
 
 
 
         if (User::where('email', $user->email) -> exists()) {
             return response()->json(['msg'=>'Email ya está registrado'], 404);
          }
-        $user->save();
-        $perf= new Perfil();
-        $perf-> nombre = $user->name;
-        $perf-> primerApellido = $user->primerApellido;
-        $perf-> segundoApellido = $user->segundoApellido;
-        $perf-> sexo = $user->sexo;
-        $perf-> perfilPrincipal = 1;
-        $perf->perfil()->associate($user->id);
-        $perf->save();
-        return response()->json(['user' => $user]);
+         if($user->save()){
+            $perf= new Perfil();
+            $perf->nombre = $user->name;
+            $perf->primerApellido = $user->primerApellido;
+            $perf->segundoApellido = $user->segundoApellido;
+            $perf->sexo = $user->sexo;
+            $perf->fechaNacimiento = $request->fechaNacimiento;
+            $perf->perfilPrincipal = 1;
+            $perf->user()->associate($user->id);
+
+            if($perf->save()){
+                $exp = new Expediente();
+                $exp->perfil_id = $user->id;
+                $exp->tipo_sangre_id = 0;
+                $exp->tipoSangre()->associate($request->input('tipoSangre_id'));
+                $exp->perfil()->associate($perf->id);
+            }
+         }
+
+        return response()->json([
+            'user' => $user,
+            'perfil' => $perf,
+            'expediente' => $exp
+        ]);
     }
 
     public function listaMedico(Request $request)

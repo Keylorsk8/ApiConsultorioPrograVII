@@ -19,7 +19,7 @@ class CreatePerfilsTable extends Migration
             $table->string('primerApellido');
             $table->string('segundoApellido');
             $table->string('sexo');
-            $table->date('fechaNacimiento');
+            $table->date('fechaNacimiento')->nullable();;
             $table->boolean('perfilPrincipal')->default('0');
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->
