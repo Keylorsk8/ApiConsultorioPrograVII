@@ -97,6 +97,7 @@ class ConsultaController extends Controller
      */
     public function store(Request $request)
     {
+
         try {
             $this-> validate($request,[
                 'nombre'=>'required|min:5',
@@ -110,6 +111,10 @@ class ConsultaController extends Controller
              if(!$user = JWTAuth::parseToken()->authenticate()){
                 return response()->json(['msg'=>'Usuario no encontrado'],404);
              }
+             if($user->rol_id !== 2){
+                return response()->json(['msg'=>'Usuario no autorizado'],404);
+            }
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
         }
