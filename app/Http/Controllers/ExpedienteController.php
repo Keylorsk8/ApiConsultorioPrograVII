@@ -73,7 +73,10 @@ class ExpedienteController extends Controller
             $exp = expediente::find($request->id);
             $alergia = Alergia::where('id', $request->alergia_id)->get();
 
-            $exp->alergias()->attach($alergia);
+            if (expediente::where('alergia_id',$request->alergia_id)->exists()) {
+                return response()->json(['msg' => 'La alergia ya está registrada'], 404);
+            }
+            $exp->alergias()->attach($alergia)->where('alergia_id','><',$request->alergia_id);
             $response = [
                 'msg' => 'Alergia agregada!',
                 'Alergia' => $exp
