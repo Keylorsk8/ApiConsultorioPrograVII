@@ -43,6 +43,15 @@ Route::group(['prefix' => 'v1'], function () {
         //     Route::post('recuperarEnfermedad', 'EnfermedadController@restore');
         //     Route::post('recuperarActividadFisicas', 'ActividadFisicaController@restore');
         Route::post('agregarAlergia', 'ExpedienteController@agregarAlergia');
+        Route::post('agregarActividadFisica', 'ExpedienteController@agregarActividadFisica');
+        Route::post('modificarActividadFisica', 'ExpedienteController@modificarActividadFisica');
+        Route::post('modificarAlergia', 'ExpedienteController@modificarAlergia');
+        Route::post('agregarEnfermedad', 'ExpedienteController@agregarEnfermedad');
+        Route::post('modificarEnfermedad', 'ExpedienteController@modificarEnfermedad');
+        Route::post('listaEnfermedades', 'ExpedienteController@listaEnfermedades');
+        Route::post('compartirPerfil', 'ExpedienteController@compartirPerfil');
+        Route::post('detalleExpediente', 'ExpedienteController@detalleExpediente');
+
     });
 
     Route::group(['prefix' => 'usuario'], function ($router) {
