@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\cirugia;
 use Illuminate\Http\Request;
-
+use JWTAuth;
+use App\Expediente;
 class CirugiaController extends Controller
 {
     /**
@@ -53,6 +54,8 @@ class CirugiaController extends Controller
             'fecha'=>$request->input('fecha'),
             'lugar'=>$request->input('lugar')
         ]);
+
+        $cirug->expediente()->associate($request->input('expediente_id'));
 
         if($cirug->save()){
 
@@ -146,5 +149,24 @@ class CirugiaController extends Controller
     public function destroy(cirugia $cirugia)
     {
         //
+    }
+
+    public function detallePorPerfil(Request $request)
+    {
+        try {
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+            //withCount contar el número de resultados de una relación
+            $med= cirugia::where('expediente_id', $request->expediente_id)->get();
+            $response = [
+                'msg' => 'Lista de cirugías',
+                'Cirugía' => $med
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
     }
 }

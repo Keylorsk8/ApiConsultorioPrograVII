@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cirugia extends Model
 {
-    protected $fillable = ['nombre','fecha','lugar','creadaPorAdmin'];
+    protected $fillable = ['nombre','fecha','lugar','creadaPorAdmin','expediente_id'];
 
-    public function expedientes()
+    public function expediente()
     {
-        return $this->belongsToMany('App\Expediente', 'expediente_cirugia', 'cirugia_id', 'expediente_id');
+        return $this->belongsTo('App\Expediente');
     }
 }

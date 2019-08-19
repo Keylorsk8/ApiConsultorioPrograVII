@@ -19,6 +19,10 @@ class CreateCirugiasTable extends Migration
             $table->date('fecha');
             $table->string('lugar');
             $table->boolean('creadaPorAdmin')->default(false);
+            $table->unsignedInteger('expediente_id')->nullable();
+            $table->foreign('expediente_id')->
+            references('id')->
+            on('expedientes');
             $table->timestamps();
         });
     }
@@ -30,6 +34,10 @@ class CreateCirugiasTable extends Migration
      */
     public function down()
     {
+        Schema::table('cirugias', function (Blueprint $table) {
+            $table->dropForeign('expedientes_cirugia_id_foreign');
+            $table->dropColumn('expediente_id');
+        });
         Schema::dropIfExists('cirugias');
     }
 }

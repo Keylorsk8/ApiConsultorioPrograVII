@@ -4,9 +4,19 @@ namespace App\Http\Controllers;
 
 use App\medicamento;
 use Illuminate\Http\Request;
+use JWTAuth;
+use App\Expediente;
 
 class MedicamentoController extends Controller
 {
+    public function __construct()
+    {
+        //No se quieren proteger todas las acciones
+        //Agregar segundo argumento
+        $this->middleware('jwt.auth',['only'=>[
+            'detallePorPerfil'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -145,5 +155,24 @@ class MedicamentoController extends Controller
     public function destroy(medicamento $medicamento)
     {
         //
+    }
+
+    public function detallePorPerfil(Request $request)
+    {
+        try {
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+            //withCount contar el número de resultados de una relación
+            $med= medicamento::where('expediente_id', $request->expediente_id)->get();
+            $response = [
+                'msg' => 'Lista de medicamentos',
+                'Medicamento' => $med
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
     }
 }

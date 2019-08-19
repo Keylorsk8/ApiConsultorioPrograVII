@@ -30,7 +30,7 @@ class PerfilController extends Controller
         }
         try {
 
-            $per=perfil::orderBy('nombre', 'asc') ->where('usuario_id', $user->id)->get();
+            $per=perfil::orderBy('nombre', 'asc') ->where('user_id', $user->id)->get();
             $response=[
                 'msg'=>'Lista de perfiles',
                 'Perfil'=>$per
@@ -71,6 +71,10 @@ class PerfilController extends Controller
               //Obtener el usuario autentificado actual
               if(!$user = JWTAuth::parseToken()->authenticate()){
                 return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+            if($user->rol_id !== 3){
+                return response()->json(['msg'=>'Usuario no autorizado'],404);
             }
 
         } catch (\Illuminate\Validation\ValidationException $e ) {

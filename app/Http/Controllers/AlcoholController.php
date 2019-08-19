@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use App\alcohol;
 use Illuminate\Http\Request;
+use JWTAuth;
 
 class AlcoholController extends Controller
 {
+    public function __construct()
+    {
+        //No se quieren proteger todas las acciones
+        //Agregar segundo argumento
+        $this->middleware('jwt.auth',['only'=>[
+            'update','store'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,9 +52,9 @@ class AlcoholController extends Controller
 
             ]);
             //Obtener el usuario autentificado actual
-            // if(!$user = JWTAuth::parseToken()->authenticate()){
-            //      return response()->json(['msg'=>'Usuario no encontrado'],404);
-            //  }
+             if(!$user = JWTAuth::parseToken()->authenticate()){
+                 return response()->json(['msg'=>'Usuario no encontrado'],404);
+             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
         }
@@ -112,9 +121,9 @@ class AlcoholController extends Controller
                 'tomaActualmente'=>'required',
             ]);
             //Obtener el usuario autentificado actual
-            // if(!$user = JWTAuth::parseToken()->authenticate()){
-            //     return response()->json(['msg'=>'Usuario no encontrado'],404);
-            // }
+             if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
         }
