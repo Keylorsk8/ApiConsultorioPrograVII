@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use App\fumado;
 use Illuminate\Http\Request;
+use JWTAuth;
 
 class FumadoController extends Controller
 {
+    public function __construct()
+    {
+        //No se quieren proteger todas las acciones
+        //Agregar segundo argumento
+        $this->middleware('jwt.auth',['only'=>[
+            'detallePorPerfil'
+        ]]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -72,9 +81,29 @@ class FumadoController extends Controller
      * @param  \App\fumado  $fumado
      * @return \Illuminate\Http\Response
      */
-    public function show(fumado $fumado)
+    public function show($id)
     {
-        //
+
+    }
+
+    public function detallePorPerfil(Request $request)
+    {
+        try {
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+
+            //withCount contar el número de resultados de una relación
+            $fum = fumado::where('expediente_id', $request->expediente_id)->first();
+            $response = [
+                'msg' => 'Información de fumado',
+                'Fumado' => $fum
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
     }
 
     /**
@@ -116,8 +145,8 @@ class FumadoController extends Controller
         $fum->tiempoComenzoAFumar=$request->input('tiempoComenzoAFumar');
         $fum->observaciones=$request->input('observaciones');
 
-    
 
+        $fum->expediente()->associate($request->input('expediente_id'));
         if($fum->update()){
 
 

@@ -23,6 +23,8 @@ class EnfermedadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
     public function index()
     {
         try {
@@ -47,6 +49,7 @@ class EnfermedadController extends Controller
     {
         //
     }
+
 
     /**
      * Store a newly created resource in storage.

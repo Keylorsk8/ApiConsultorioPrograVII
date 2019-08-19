@@ -15,7 +15,7 @@ class ConsultaController extends Controller
         //No se quieren proteger todas las acciones
         //Agregar segundo argumento
         $this->middleware('jwt.auth',['only'=>[
-            'update','store'
+            'update','store',' consultaAsignada'
         ]]);
     }
     /**
@@ -42,8 +42,14 @@ class ConsultaController extends Controller
     }
     public function consultaAsignada(){
         try{
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+             }
+             if($user->rol_id !== 2){
+                return response()->json(['msg'=>'Usuario no autorizado'],404);
+            }
             consulta::onlyTrashed()->where('perfil_id','>', 0)->restore();
-            $con=consulta::orderBy('nombre', 'asc') ->where('perfil_id','>', 0)->get();
+            $con=consulta::orderBy('nombre', 'asc') ->where('perfil_id','>', 0)->where('user_id', $user->id)->get();
             $response=[
                 'msg'=>'Lista de consultas',
                 'Consulta'=>$con
@@ -89,6 +95,26 @@ class ConsultaController extends Controller
         //
     }
 
+
+    public function detalleConsulta(Request $request){
+        {
+            try {
+                if(!$user = JWTAuth::parseToken()->authenticate()){
+                    return response()->json(['msg'=>'Usuario no encontrado'],404);
+                }
+
+                //withCount contar el número de resultados de una relación
+                $med= consulta::where('id', $request->id)->where('user_id', $user->id)->get();
+                $response = [
+                    'msg' => 'Detalle consulta',
+                    'Consulta' => $med
+                ];
+                return response()->json($response, 200);
+            } catch (\Exception $e) {
+                return \response($e->getMessage(), 422);
+            }
+        }
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -173,6 +199,24 @@ class ConsultaController extends Controller
         }
     }
 
+    public function detallePorPerfil(Request $request)
+    {
+        try {
+            if(!$user = JWTAuth::parseToken()->authenticate()){
+                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+
+            //withCount contar el número de resultados de una relación
+            $med= consulta::where('perfil_id', $request->perfil_id)->where('id',$request->id)->get();
+            $response = [
+                'msg' => 'Lista de consultas',
+                'Consultas' => $med
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -204,6 +248,9 @@ class ConsultaController extends Controller
             //Obtener el usuario autentificado actual
              if(!$user = JWTAuth::parseToken()->authenticate()){
                return response()->json(['msg'=>'Usuario no encontrado'],404);
+            }
+            if($user->rol_id !== 2){
+                return response()->json(['msg'=>'Usuario no autorizado'],404);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(),422);
@@ -281,5 +328,6 @@ class ConsultaController extends Controller
         }
 
     }
+
 }
 
