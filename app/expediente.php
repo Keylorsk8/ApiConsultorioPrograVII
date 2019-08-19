@@ -44,7 +44,7 @@ class Expediente extends Model
 
     public function cirugias()
     {
-        return $this->belongsToMany('App\Cirugia', 'expediente_cirugia', 'expediente_id', 'cirugia_id');
+        return $this->hasMany('App\Cirugia');
     }
 
     public function tipoSangre()

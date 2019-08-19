@@ -17,6 +17,11 @@ class CreateMedicamentosTable extends Migration
             $table->increments('id');
             $table->string('nombre');
             $table->string('descripcion');
+
+            $table->unsignedInteger('expediente_id')->nullable();
+            $table->foreign('expediente_id')->
+            references('id')->
+            on('expedientes');
             $table->timestamps();
         });
     }
@@ -29,5 +34,9 @@ class CreateMedicamentosTable extends Migration
     public function down()
     {
         Schema::dropIfExists('medicamentos');
+        Schema::table('medicamentos', function (Blueprint $table) {
+        $table->dropForeign('expedientes_medicamento_id_foreign');
+        $table->dropColumn('expediente_id');
+    });
     }
 }
