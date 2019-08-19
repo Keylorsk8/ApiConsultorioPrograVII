@@ -51,10 +51,10 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('login', 'AuthController@login');
         Route::post('logout', 'AuthController@logout');
         Route::post('me', 'AuthController@me');
+        Route::post('show/{id}','AuthController@show');
         Route::post('editar', 'AuthController@update');
         Route::post('medico', 'AuthController@listaMedico');
         Route::resource('perfil', 'PerfilController');
-        Route::get('getMedicos','AuthController@listaMedico');
     });
 
     Route::group(['prefix' => 'fumado'], function ($router) {

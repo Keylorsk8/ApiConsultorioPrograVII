@@ -70,6 +70,7 @@ class AuthController extends Controller
                 $exp->tipo_sangre_id = 0;
                 $exp->tipoSangre()->associate($request->input('tipoSangre_id'));
                 $exp->perfil()->associate($perf->id);
+                $exp->save();
             }
         }
         return response()->json([
@@ -79,19 +80,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function show($id)
+    {
+        try {
+            //withCount contar el número de resultados de una relación
+            $al = user::where('id', $id)->first();
+            $response = [
+                'msg' => 'Información del usuario',
+                'Usuarios' => [$al]
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(), 422);
+        }
+    }
+
     public function listaMedico(Request $request)
     {
         try {
             $med = DB::table('users')
                 ->join('roles', 'users.rol_id', '=', 'roles.id')
                 ->join('especialidades', 'especialidades.id', '=', 'users.especialidad_id')
-                ->select('users.name', 'users.primerApellido', 'users.segundoApellido', 'especialidades.nombre as Especialidad')
+                ->select('users.id', 'users.name', 'users.primerApellido', 'users.segundoApellido', 'users.sexo', 'especialidades.nombre as especialidad')
                 ->where('users.rol_id', 2)->where('name', 'like', "%{$request->filtro}%")
                 ->orWhere('primerApellido', 'like', "%{$request->filtro}%")
                 ->orWhere('segundoApellido', 'like', "%{$request->filtro}%")->get();
             $response = [
                 'msg' => 'Lista de médicos',
-                'médico' => $med
+                'Usuarios' => $med
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {
@@ -104,15 +120,19 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login()
+    public function login(Request $request)
     {
-        $credentials = request(['email', 'password']);
-        $token = $this->guard()->attempt($credentials);
-        if (!$token) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        try {
+            $credentials = request(['email', 'password']);
+            $token = $this->guard()->attempt($credentials);
+            if (!$token) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
 
-        return $this->respondWithToken($token);
+            return $this->respondWithToken($token);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseErrors($e->errors(), 422);
+        }
     }
 
     /**
@@ -215,10 +235,9 @@ class AuthController extends Controller
                 'name' => 'required',
                 'email' => 'required|email',
                 'password' => 'required|min:6',
-                'primerApellido'=>'required',
-                'segundoApellido'=> 'required',
-                'sexo'=> 'required',
-                'especialidad_id' => 'required'
+                'primerApellido' => 'required',
+                'segundoApellido' => 'required',
+                'sexo' => 'required'
             ]);
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['msg' => 'Usuario no encontrado'], 404);
@@ -236,19 +255,26 @@ class AuthController extends Controller
         $user->primerApellido = $request->primerApellido;
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
-        $user->especialidad()->associate($request->input(especialidad_id));
-
+        if($request->especialidad_id == null){
+            $user->especialidad_id = 9;
+        }else{
+            $user->especialidad_id = $request->especialidad_id;
+        }
+        if ($user->especialidad_id != null) {
+            $esp = DB::table('especialidades')->select('*')->where('id', $user->especialidad_id)->get();
+            $user->especialidad = $esp[0]->nombre;
+        }
         // if($user->especialidad_id != null ){
         //     $especialidad =
         //     DB::table('especialidades')->select('*')->where('id',$user->especialidad_id)->get();
         //     $user->especialidad = $especialidad->Especialidades[0]->nombre;
         // }
-        $user->rol_id= 2;
+        $user->rol_id = 2;
 
-        if (User::where('email', $user->email) -> exists()) {
-            return response()->json(['msg'=>'Email ya está registrado'], 404);
-         }
-        try{
+        if (User::where('email', $user->email)->exists()) {
+            return response()->json(['msg' => 'Email ya está registrado'], 404);
+        }
+        try {
             $user->save();
         } catch (\Illuminate\Validation\ValidationException $e) {
             return $this->responseErrors($e->errors(), 422);
