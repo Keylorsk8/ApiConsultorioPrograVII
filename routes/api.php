@@ -54,6 +54,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('editar', 'AuthController@update');
         Route::post('medico', 'AuthController@listaMedico');
         Route::resource('perfil', 'PerfilController');
+        Route::get('getMedicos','AuthController@listaMedico');
     });
 
     Route::group(['prefix' => 'fumado'], function ($router) {
@@ -77,6 +78,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::resource('medicamento', 'MedicamentoController');
     Route::resource('expediente', 'ExpedienteController');
     Route::resource('consulta', 'ConsultaController');
+    Route::resource('especialidad', 'EspecialidadController');
     Route::resource('fumado', 'FumadoController');
     Route::resource('consumoAlcohol', 'AlcoholController');
     Route::resource('cirugia', 'CirugiaController');

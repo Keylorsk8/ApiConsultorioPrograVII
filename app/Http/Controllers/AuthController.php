@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Especialidad;
 use App\Expediente;
 use Illuminate\Http\Request;
-use  Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Perfil;
 use JWTAuth;
@@ -38,7 +39,7 @@ class AuthController extends Controller
                 'sexo' => 'required',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return \response($e->errors(), 422);
+            return $this->responseErrors($e->errors(), 422);
         }
         $user = new User();
         $user->name = $request->name;
@@ -48,10 +49,8 @@ class AuthController extends Controller
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
         $user->especialidad_id = null;
+        $user->especialidad = null;
         $user->rol_id = 3;
-
-
-
         if (User::where('email', $user->email)->exists()) {
             return response()->json(['msg' => 'Email ya está registrado'], 404);
         }
@@ -73,7 +72,6 @@ class AuthController extends Controller
                 $exp->perfil()->associate($perf->id);
             }
         }
-
         return response()->json([
             'user' => $user,
             'perfil' => $perf,
@@ -83,7 +81,6 @@ class AuthController extends Controller
 
     public function listaMedico(Request $request)
     {
-
         try {
             $med = DB::table('users')
                 ->join('roles', 'users.rol_id', '=', 'roles.id')
@@ -92,23 +89,16 @@ class AuthController extends Controller
                 ->where('users.rol_id', 2)->where('name', 'like', "%{$request->filtro}%")
                 ->orWhere('primerApellido', 'like', "%{$request->filtro}%")
                 ->orWhere('segundoApellido', 'like', "%{$request->filtro}%")->get();
-
-            // $med=User:: where('rol_id',2)->
-            // where('name','like', "%{$request->filtro}%")
-            // ->orWhere('primerApellido','like', "%{$request->filtro}%")
-            // ->orWhere('segundoApellido','like', "%{$request->filtro}%")-> get();
             $response = [
                 'msg' => 'Lista de médicos',
                 'médico' => $med
             ];
-
-
-
             return response()->json($response, 200);
         } catch (\Exception $e) {
             return \response($e->getMessage(), 422);
         }
     }
+
     /**
      * Get a JWT via given credentials.
      *
@@ -225,9 +215,10 @@ class AuthController extends Controller
                 'name' => 'required',
                 'email' => 'required|email',
                 'password' => 'required|min:6',
-                'primerApellido' => 'required',
-                'segundoApellido' => 'required',
-                'sexo' => 'required',
+                'primerApellido'=>'required',
+                'segundoApellido'=> 'required',
+                'sexo'=> 'required',
+                'especialidad_id' => 'required'
             ]);
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['msg' => 'Usuario no encontrado'], 404);
@@ -236,7 +227,7 @@ class AuthController extends Controller
                 return response()->json(['msg' => 'Usuario no autorizado'], 404);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return \response($e->errors(), 422);
+            return $this->responseErrors($e->errors(), 422);
         }
         $user = new User();
         $user->name = $request->name;
@@ -245,13 +236,39 @@ class AuthController extends Controller
         $user->primerApellido = $request->primerApellido;
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
-        $user->especialidad()->associate($request->input('especialidad_id'));
-        $user->rol_id = 2;
+        $user->especialidad()->associate($request->input(especialidad_id));
 
-        if (User::where('email', $user->email)->exists()) {
-            return response()->json(['msg' => 'Email ya está registrado'], 404);
+        // if($user->especialidad_id != null ){
+        //     $especialidad =
+        //     DB::table('especialidades')->select('*')->where('id',$user->especialidad_id)->get();
+        //     $user->especialidad = $especialidad->Especialidades[0]->nombre;
+        // }
+        $user->rol_id= 2;
+
+        if (User::where('email', $user->email) -> exists()) {
+            return response()->json(['msg'=>'Email ya está registrado'], 404);
+         }
+        try{
+            $user->save();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseErrors($e->errors(), 422);
         }
-        $user->save();
         return response()->json(['user' => $user]);
+    }
+
+    public function responseErrors($errors, $statusHTML)
+    {
+        $transformed = [];
+
+        foreach ($errors as $field => $message) {
+            $transformed[] = [
+                'field' => $field,
+                'message' => $message[0]
+            ];
+        }
+
+        return response()->json([
+            'errors' => $transformed
+        ], $statusHTML);
     }
 }
