@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\especialidad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EspecialidadController extends Controller
 {
@@ -14,7 +15,17 @@ class EspecialidadController extends Controller
      */
     public function index()
     {
-        //
+        try {
+
+           $esp = DB::table('Especialidades')->get('*');
+            $response=[
+                'msg'=>'Lista de actividades físicas',
+                'Especialidades'=>$esp
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(),422);
+        }
     }
 
     /**
@@ -44,9 +55,19 @@ class EspecialidadController extends Controller
      * @param  \App\especialidad  $especialidad
      * @return \Illuminate\Http\Response
      */
-    public function show(especialidad $especialidad)
+    public function show($id)
     {
-        //
+        try {
+
+            $esp = DB::table('Especialidades')->where('id',$id)->get();
+             $response=[
+                 'msg'=>'Lista de Especialidades',
+                 'Especialidades'=>$esp
+             ];
+             return response()->json($response, 200);
+         } catch (\Exception $e) {
+             return \response($e->getMessage(),422);
+         }
     }
 
     /**

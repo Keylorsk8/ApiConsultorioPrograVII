@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('sexo');
             $table->unsignedInteger('rol_id');
             $table->unsignedInteger('especialidad_id')->nullable();
+            $table->string('especialidad')->nullable();
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();

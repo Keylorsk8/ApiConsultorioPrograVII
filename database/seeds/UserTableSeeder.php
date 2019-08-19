@@ -41,6 +41,7 @@ class UserTableSeeder extends Seeder
             'email'=>'doctor@gmail.com',
             'sexo' => 'Masculino',
             'especialidad_id' => 1,
+            'especialidad' => 'Medicina General',
             'password'=>crypt('usuario123',null),
             'rol_id'=>2
         ]);

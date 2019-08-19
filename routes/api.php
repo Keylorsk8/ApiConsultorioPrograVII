@@ -46,11 +46,13 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::group(['prefix' => 'usuario'], function ($router) {
         Route::post('registrar', 'AuthController@register');
+        Route::post('registrarMedico','AuthController@registerMedico');
         Route::post('login', 'AuthController@login');
         Route::post('logout', 'AuthController@logout');
         Route::post('me', 'AuthController@me');
         Route::post('editar', 'AuthController@update');
         Route::resource('perfil', 'PerfilController');
+        Route::get('getMedicos','AuthController@listaMedico');
     });
     Route::resource('alergias', 'AlergiaController');
     // Route::resource('enfermedadFamiliar', 'EnfermedadFamiliaresController');
@@ -60,8 +62,7 @@ Route::group(['prefix' => 'v1'], function () {
 
     Route::resource('expediente', 'ExpedienteController');
     Route::resource('consulta', 'ConsultaController');
+    Route::resource('especialidad', 'EspecialidadController');
     // Route::get('listaConsulta', 'ConsultaController@consultaAsignada');
     // Route::get('listaConsultaPorMedico', 'ConsultaController@consultaPorMedico');
-    // Route::post('medicos','AuthController@listaMedico');
-
 });

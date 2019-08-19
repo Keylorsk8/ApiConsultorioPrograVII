@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Especialidad;
 use Illuminate\Http\Request;
-use  Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Perfil;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -29,8 +31,8 @@ class AuthController extends Controller
                 'segundoApellido'=> 'required',
                 'sexo'=> 'required',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e ) {
-        return \response($e->errors(),422);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseErrors($e->errors(), 422);
         }
         $user = new User();
         $user->name = $request->name;
@@ -40,9 +42,8 @@ class AuthController extends Controller
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
         $user->especialidad_id= $request->especialidad_id;
+        $user->especialidad = null;
         $user->rol_id= $request->rol_id;
-
-
 
         if (User::where('email', $user->email) -> exists()) {
             return response()->json(['msg'=>'Email ya está registrado'], 404);
@@ -59,9 +60,8 @@ class AuthController extends Controller
         return response()->json(['user' => $user]);
     }
 
-    public function listaMedico(Request $request)
+    public function listaMedicoConFiltro(Request $request)
     {
-
         try {
 
             $med=User:: where('rol_id',2)->
@@ -70,13 +70,28 @@ class AuthController extends Controller
             ->orWhere('segundoApellido','like', "%{$request->filtro}%")-> get();
             $response=[
                 'msg'=>'Lista de médicos',
-                'médico'=>$med
+                'Medicos'=>$med
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {
             return \response($e->getMessage(),422);
         }
     }
+
+    public function listaMedico(){
+        try {
+
+            $med=User:: where('rol_id',2)-> get();
+            $response=[
+                'msg'=>'Lista de médicos',
+                'Usuarios'=>$med
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return \response($e->getMessage(),422);
+        }
+    }
+
     /**
      * Get a JWT via given credentials.
      *
@@ -196,9 +211,10 @@ class AuthController extends Controller
                 'primerApellido'=>'required',
                 'segundoApellido'=> 'required',
                 'sexo'=> 'required',
+                'especialidad_id' => 'required'
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e ) {
-        return \response($e->errors(),422);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseErrors($e->errors(), 422);
         }
         $user = new User();
         $user->name = $request->name;
@@ -207,15 +223,40 @@ class AuthController extends Controller
         $user->primerApellido = $request->primerApellido;
         $user->segundoApellido = $request->segundoApellido;
         $user->sexo = $request->sexo;
-        $user->especialidad_id= $request->especialidad_id;
+        $user->especialidad()->associate($request->input(especialidad_id));
+
+        // if($user->especialidad_id != null ){
+        //     $especialidad =
+        //     DB::table('especialidades')->select('*')->where('id',$user->especialidad_id)->get();
+        //     $user->especialidad = $especialidad->Especialidades[0]->nombre;
+        // }
         $user->rol_id= 2;
-
-
 
         if (User::where('email', $user->email) -> exists()) {
             return response()->json(['msg'=>'Email ya está registrado'], 404);
          }
-        $user->save();
+        try{
+            $user->save();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->responseErrors($e->errors(), 422);
+        }
+
         return response()->json(['user' => $user]);
+    }
+
+    public function responseErrors($errors, $statusHTML)
+    {
+        $transformed = [];
+
+        foreach ($errors as $field => $message) {
+            $transformed[] = [
+                'field' => $field,
+                'message' => $message[0]
+            ];
+        }
+
+        return response()->json([
+            'errors' => $transformed
+        ], $statusHTML);
     }
 }
