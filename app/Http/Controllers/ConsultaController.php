@@ -291,20 +291,24 @@ class ConsultaController extends Controller
      */
     public function destroy($id)
     {
+        if(!$user = JWTAuth::parseToken()->authenticate()){
+            return response()->json(['msg'=>'Usuario no encontrado'],404);
+         }
+         if($user->rol_id !== 2){
+             return response()->json(['msg'=>'Usuario no autorizado'],404);
+         }
 
-        if(consulta::where('perfil_id',null)){
+         try{
             consulta::where('id', $id)->where('perfil_id', null)->forceDelete();
+            $con=consulta::orderBy('nombre', 'asc') ->get();
             $response=[
-                'msg'=>'Consulta eliminada con éxito'
+                'msg'=>'',
+                'Consultas' => $con
             ];
             return response()->json($response, 200);
-        }
-
-        if(consulta::where('perfil_id', !null)){
-            $response1=[
-                'msg1'=>'Consulta asignada. No puede ser eliminada'
-            ];
-            return response()->json($response1, 200);
+         }
+         catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(),422);
         }
 
     }

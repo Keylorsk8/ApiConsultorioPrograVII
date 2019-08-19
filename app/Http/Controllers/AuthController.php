@@ -18,7 +18,7 @@ class AuthController extends Controller
         $this->middleware(
             'jwt.auth',
             ['except' => ['login', 'register', 'listaMedico']],
-            ['only' => ['registerMedico,update']]
+            ['only' => ['registerMedico','update']]
         );
     }
 

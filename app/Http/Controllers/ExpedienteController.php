@@ -2,12 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\ActividadFisica;
 use App\Alergia;
+use App\Enfermedad;
 use App\expediente;
+use App\Perfil;
 use Illuminate\Http\Request;
-
+use JWTAuth;
+use Illuminate\Support\Facades\DB;
 class ExpedienteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(
+            'jwt.auth',
+            ['only' => ['compartirPerfil']]
+        );
+    }
     /**
      * Display a listing of the resource.
      *
@@ -59,6 +70,75 @@ class ExpedienteController extends Controller
         //
     }
 
+    public function detalleExpediente(Request $request){
+        if (!$user = JWTAuth::parseToken()->authenticate()) {
+            return response()->json(['msg' => 'Usuario no encontrado'], 404);
+        }
+         if($user->rol_id !== 2){
+             return response()->json(['msg'=>'Usuario no autorizado'],404);
+         }
+
+         try{
+            $per=perfil::where('id',$request->id)->first();
+            $exp=expediente::where('perfil_id', $per->id)
+            ->with('enfermedades')->with('alergias')->with('actividadesFisicas')->first();
+            $response = [
+                'msg' => 'Expediente',
+                'Datos'=> $per,
+                'Expediente' => $exp,
+
+            ];
+            return response()->json($response, 200);
+}
+    catch (\Exception $e)
+    {
+    return \response($e->getMessage(),422);
+}
+    }
+
+    public function compartirPerfil(Request $request){
+        if (!$user = JWTAuth::parseToken()->authenticate()) {
+            return response()->json(['msg' => 'Usuario no encontrado'], 404);
+        }
+         if($user->rol_id !== 3){
+             return response()->json(['msg'=>'Usuario no autorizado'],404);
+         }
+
+        try{
+                    $per=perfil::where('user_id',$user->id)->first();
+                    $exp=expediente::where('id',$request->id)->where('perfil_id', $per->id)
+                    ->with('enfermedades')->with('alergias')->with('actividadesFisicas')->first();
+                    $response = [
+                        'msg' => 'Expediente',
+                        'Datos'=> $per,
+                        'Expediente' => $exp,
+
+                    ];
+                    return response()->json($response, 200);
+        }
+            catch (\Exception $e)
+            {
+            return \response($e->getMessage(),422);
+        }
+    }
+
+    public function listaEnfermedades(Request $request){
+        try {
+
+            $exp=expediente::where('id',$request->expediente_id)
+            ->with('enfermedades')->first();
+           // $exp=expediente::orderBy('nombre', 'asc') ->get();
+            $response=[
+                'msg'=>'Lista de enfermedades',
+                'Expediente'=>$exp
+            ];
+            return response()->json($response, 200);
+        } catch (\Exception $e)
+         {
+            return \response($e->getMessage(),422);
+        }
+
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -70,19 +150,93 @@ class ExpedienteController extends Controller
     public function agregarAlergia(Request $request)
     {
         try {
-            $exp = expediente::find($request->id);
-            $alergia = Alergia::where('id', $request->alergia_id)->get();
+            $exp = expediente::find($request->expediente_id);
 
-            if (expediente::where('alergia_id',$request->alergia_id)->exists()) {
-                return response()->json(['msg' => 'La alergia ya está registrada'], 404);
-            }
-            $exp->alergias()->attach($alergia)->where('alergia_id','><',$request->alergia_id);
+            $exp->alergias()->attach(
+                $request->input('alergia_id') === null ?
+                [] : $request->input('alergia_id')
+            );
+
             $response = [
                 'msg' => 'Alergia agregada!',
-                'Alergia' => $exp
+                'Expediente' => $exp
             ];
             return response()->json($response, 200);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(), 422);
+        }
+    }
+
+    public function modificarAlergia(Request $request)
+    {
+        try {
+            $exp = expediente::find($request->expediente_id);
+           // $alergia = Alergia::find($request->alergia_id);
+
+
+            if($exp->update() ){
+
+                $exp->alergias()->sync(
+                    $request->input('alergia_id') === null ?
+                    [] : $request->input('alergia_id')
+                );
+                $exp=expediente::where('id',$request->expediente_id)
+                ->with('alergias')->first();
+                $response = [
+                    'msg' => 'Alergia actualizada!',
+                    'Expediente' => $exp
+                ];
+                return response()->json($response, 200);
+
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(), 422);
+        }
+    }
+
+
+
+    public function agregarActividadFisica(Request $request)
+    {
+        try {
+            $exp = expediente::find($request->expediente_id);
+            $exp->actividadesFisicas()->attach(
+                $request->input('actividadFisica_id') === null ?
+                [] : $request->input('actividadFisica_id')
+            );
+            $response = [
+                'msg' => 'Actividad Física agregada!',
+                'Expediente' => $exp
+            ];
+            return response()->json($response, 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(), 422);
+        }
+    }
+
+    public function modificarActividadFisica(Request $request)
+    {
+        try {
+            $exp = expediente::find($request->expediente_id);
+
+            if($exp->update()){
+                //Sincronice plataformas
+                //Array de plataformas
+                $exp->actividadesFisicas()->sync(
+                    $request->input('actividadFisica_id') === null ?
+                    [] : $request->input('actividadFisica_id')
+                );
+                $exp=expediente::where('id',$request->expediente_id)
+                ->with('actividadesFisicas')->first();
+                $response = [
+                    'msg' => 'Actividad Física actualizada!',
+                    'Expediente' => $exp
+                ];
+                return response()->json($response, 200);
+
+            }
         } catch (\Illuminate\Validation\ValidationException $e) {
             return \response($e->errors(), 422);
         }
@@ -139,5 +293,50 @@ class ExpedienteController extends Controller
     public function destroy(expediente $expediente)
     {
         //
+    }
+
+    public function agregarEnfermedad(Request $request)
+    {
+        try {
+            $exp = expediente::find($request->expediente_id);
+            $exp->enfermedades()->attach(
+                $request->input('enfermedad_id') === null ?
+                [] : $request->input('enfermedad_id')
+            );
+            $response = [
+                'msg' => 'Enfermedad agregada!',
+                'Enfermedad' => $exp
+            ];
+            return response()->json($response, 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(), 422);
+        }
+    }
+
+    public function modificarEnfermedad(Request $request)
+    {
+        try {
+            $exp = expediente::find($request->expediente_id);
+
+            if($exp->update()){
+                //Sincronice plataformas
+                //Array de plataformas
+                $exp->enfermedades()->sync(
+                    $request->input('enfermedad_id') === null ?
+                    [] : $request->input('enfermedad_id')
+                );
+                $exp=expediente::where('id',$request->expediente_id)
+                ->with('enfermedades')->first();
+                $response = [
+                    'msg' => 'Enfermedades actualizada!',
+                    'Enfermedades' => $exp
+                ];
+                return response()->json($response, 200);
+
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return \response($e->errors(), 422);
+        }
     }
 }
